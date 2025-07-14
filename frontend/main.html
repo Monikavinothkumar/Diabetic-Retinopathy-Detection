@@ -1,0 +1,61 @@
+<!-- Add these scripts in your HTML head -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+
+<!-- Add to your existing HTML -->
+<script>
+document.getElementById('download-report').addEventListener('click', async function() {
+    try {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        
+        // Set document properties
+        doc.setDocumentProperties({
+            title: 'Diabetic Retinopathy Report',
+            subject: 'Medical Report',
+            author: 'EyeCare AI'
+        });
+
+        // Add header
+        doc.setFontSize(20);
+        doc.setFont('helvetica', 'bold');
+        doc.text('Diabetic Retinopathy Report', 105, 20, { align: 'center' });
+        
+        // Add date
+        doc.setFontSize(12);
+        doc.text(`Generated: ${new Date().toLocaleDateString()}`, 105, 30, { align: 'center' });
+
+        // Add diagnosis details
+        let yPos = 40;
+        doc.setFontSize(16);
+        doc.text(`Detection Confidence: 81%`, 14, yPos);
+        yPos += 10;
+        
+        doc.setFontSize(14);
+        doc.text(`Severity: No DR`, 14, yPos);
+        yPos += 15;
+
+        // Add recommendations
+        doc.setFontSize(12);
+        const splitText = doc.splitTextToSize(
+            document.querySelector('#recommendation').textContent, 
+            180
+        );
+        doc.text(splitText, 14, yPos);
+        yPos += splitText.length * 7 + 10;
+
+        // Add medical disclaimer
+        doc.setFontSize(10);
+        doc.setFont('helvetica', 'italic');
+        doc.text('* This AI-generated report should be reviewed by a qualified ophthalmologist.', 
+                14, yPos, { maxWidth: 180 });
+
+        // Save the PDF
+        doc.save(`EyeCare_Report_${Date.now()}.pdf`);
+        
+    } catch (error) {
+        console.error('Error generating PDF:', error);
+        alert('Error generating report. Please try again.');
+    }
+});
+</script>
